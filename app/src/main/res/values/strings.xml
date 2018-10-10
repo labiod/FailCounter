@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">FailCounter</string>
+    <string name="counter_text_format">%1$d times</string>
 </resources>
