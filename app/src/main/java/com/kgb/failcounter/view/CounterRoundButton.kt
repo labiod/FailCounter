@@ -20,6 +20,7 @@ class CounterRoundButton(context: Context, attrs: AttributeSet?, defStyleAttr: I
 
     private val counterButton: ImageButton
     private val counterTextView: TextView
+    private var listener: OnCounterClickListener? = null
 
     constructor(context: Context) : this(context, null)
 
@@ -29,13 +30,18 @@ class CounterRoundButton(context: Context, attrs: AttributeSet?, defStyleAttr: I
         val root = inflate(context, R.layout.round_counter_button_layout, this)
         counterButton = root.findViewById(R.id.counterButton)
         counterTextView = root.findViewById(R.id.counterTextView)
-        counterButton.setOnClickListener {
-            increaseCounter()
-        }
         val typeArr = context.obtainStyledAttributes(attrs, R.styleable.CounterRoundButton)
         counter = typeArr.getInt(R.styleable.CounterRoundButton_counter, 0)
+        counterButton.setOnClickListener {
+            increaseCounter()
+            listener?.onCounterClick(_counter)
+        }
         typeArr.recycle()
         refreshView()
+    }
+
+    fun setOnCounterClick(newListener: OnCounterClickListener) {
+        listener = newListener
     }
 
     private fun increaseCounter() {
@@ -47,5 +53,9 @@ class CounterRoundButton(context: Context, attrs: AttributeSet?, defStyleAttr: I
         post {
             counterTextView.text = resources.getString(R.string.counter_text_format, counter)
         }
+    }
+
+    interface OnCounterClickListener {
+        fun onCounterClick(counter: Int)
     }
 }

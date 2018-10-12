@@ -6,12 +6,14 @@ import java.util.*
 
 @Dao
 interface ScoreDao {
+    @Query("SELECT * FROM scores")
+    fun getScores(): List<ScoreCounterEntity>
 
     @Query("SELECT * FROM scores WHERE date BETWEEN :from AND :to LIMIT 1")
     fun getScoreByDate(from: Date, to: Date): ScoreCounterEntity
 
-    @Query("SELECT * FROM scores")
-    fun getScores(): LiveData<List<ScoreCounterEntity>>
+    @Query("SELECT * FROM scores WHERE date BETWEEN :from AND :to")
+    fun getScoresBetweenDates(from: Date, to: Date): List<ScoreCounterEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun update(item: ScoreCounterEntity)

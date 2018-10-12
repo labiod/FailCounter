@@ -38,6 +38,23 @@ class ScoreCounterRepository private constructor(context: Context) {
         }
     }
 
+    fun getScoresFromSevenDays(toDate: Date): List<ScoreCounterEntity> {
+        val calendar = Calendar.getInstance()
+        calendar.time = toDate
+        calendar.set(Calendar.HOUR, 23)
+        calendar.set(Calendar.MINUTE, 59)
+        calendar.set(Calendar.SECOND, 59)
+        calendar.set(Calendar.MILLISECOND, 99)
+        val to = calendar.time
+        calendar.set(Calendar.HOUR, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+        calendar.add(Calendar.DAY_OF_MONTH, -7);
+        val from = calendar.time
+        return db.noteDao().getScoresBetweenDates(from, to)
+    }
+
     companion object {
         @Volatile
         var instance: ScoreCounterRepository? = null

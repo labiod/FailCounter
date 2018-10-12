@@ -9,13 +9,20 @@ import com.kgb.failcounter.db.ScoreCounterEntity
 import com.kgb.failcounter.db.ScoreCounterRepository
 import java.util.*
 import java.util.concurrent.Executors
+import kotlin.Comparator
+import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
 class ScoreCounterViewModel(application: Application, val date: Date) : AndroidViewModel(application) {
     private val repository = ScoreCounterRepository.getInstance(application)
     private val _score = MutableLiveData<ScoreCounterEntity>()
+    private val _lastScores = MutableLiveData<List<ScoreCounterEntity>>()
     private val executor = Executors.newSingleThreadExecutor()
     val score : LiveData<ScoreCounterEntity?>
         get() = _score
+
+    val lastScores : LiveData<List<ScoreCounterEntity>>
+        get() = _lastScores
 
     init {
         loadData()
@@ -32,20 +39,55 @@ class ScoreCounterViewModel(application: Application, val date: Date) : AndroidV
         repository.deleteScore(item)
     }
 
-    fun getAll(): LiveData<List<ScoreCounterEntity>> {
-        return repository.db.noteDao().getScores()
-    }
-
-    fun clearAll() {
+    fun clearIncorrectData() {
         executor.execute {
-            repository.db.noteDao().clearAll()
+            val scores = repository.db.noteDao().getScores()
+            val correctScore = ArrayList<ScoreCounterEntity>()
+            val incorrectScores = ArrayList<ScoreCounterEntity>()
+            for (score in scores) {
+                if (containsScoreWithDate(correctScore, score.date))
+                    repository.deleteScore(score)
+                else
+                    correctScore.add(score)
+            }
         }
     }
 
     private fun loadData() {
         executor.execute {
-            val data = repository.getScore(date)
-            _score.postValue(data)
+            val data = repository.getScoresFromSevenDays(date)
+            val prevScores = ArrayList<ScoreCounterEntity>()
+
+            for (score in data) {
+                if(checkDate(date, score.date)) {
+                    _score.postValue(score)
+                } else {
+                    prevScores.add(score)
+                }
+            }
+            _lastScores.postValue(prevScores)
         }
+    }
+
+    private fun containsScoreWithDate(scores: List<ScoreCounterEntity>, date: Date): Boolean {
+        for (score in scores) {
+            if (checkDate(score.date, date)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun checkDate(date1: Date, date2: Date): Boolean {
+        val calendar = Calendar.getInstance()
+        calendar.time = date1
+        val day1 = calendar.get(Calendar.DAY_OF_MONTH)
+        val month1 = calendar.get(Calendar.MONTH)
+        val year1 = calendar.get(Calendar.YEAR)
+        calendar.time = date2
+        val day2 = calendar.get(Calendar.DAY_OF_MONTH)
+        val month2 = calendar.get(Calendar.MONTH)
+        val year2 = calendar.get(Calendar.YEAR)
+        return day1 == day2 && month1 == month2 && year1 == year2
     }
 }

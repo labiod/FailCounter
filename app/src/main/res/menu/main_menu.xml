@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/main_clear_data"
-        android:title="Clear all"
+        android:title="Clear incorrect Data"
         android:orderInCategory="100"
         app:showAsAction="never"
         />
