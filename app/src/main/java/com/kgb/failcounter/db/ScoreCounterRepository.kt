@@ -24,11 +24,7 @@ class ScoreCounterRepository private constructor(context: Context) {
         return db.noteDao().getScoreByDate(from , to)
     }
 
-    fun update(item: ScoreCounterEntity) {
-        executor.execute {
-            db.noteDao().update(item)
-        }
-    }
+    fun update(item: ScoreCounterEntity) = db.noteDao().update(item)
 
     fun deleteScore(item: ScoreCounterEntity) {
         executor.execute {

@@ -32,7 +32,11 @@ class ScoreCounterViewModel(application: Application, val date: Date) : AndroidV
         val newScore = _score.value?.let {
             ScoreCounterEntity(it.id, score, it.date)
         } ?: ScoreCounterEntity(null, score, date)
-        repository.update(newScore)
+        executor.execute {
+            val updated = repository.update(newScore)
+            _score.postValue(newScore)
+        }
+
     }
 
     fun resetCounter(item: ScoreCounterEntity) {
@@ -51,6 +55,15 @@ class ScoreCounterViewModel(application: Application, val date: Date) : AndroidV
                     correctScore.add(score)
             }
         }
+    }
+
+    fun updateItem(item: ScoreCounterEntity, newScore: Int) {
+        executor.execute {
+            val newItem = ScoreCounterEntity(item.id, newScore, item.date)
+            repository.update(newItem)
+            loadData()
+        }
+
     }
 
     private fun loadData() {

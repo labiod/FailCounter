@@ -46,7 +46,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:textSize="22sp"
+        android:textSize="24sp"
         android:textColor="#3355aa"
         tools:text="0 times" />
 </android.support.constraint.ConstraintLayout>

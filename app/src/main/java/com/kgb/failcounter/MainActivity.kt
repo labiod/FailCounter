@@ -48,6 +48,12 @@ class MainActivity : AppCompatActivity() {
                 clearAll()
                 true
             }
+            R.id.edit_mode_enabled -> {
+                item!!.isChecked = item.isChecked.not()
+                App.instance.editMode = item.isChecked
+                adpater?.notifyDataSetChanged()
+                true
+            }
             else -> {
                 super.onOptionsItemSelected(item)
             }

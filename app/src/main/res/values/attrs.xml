@@ -3,4 +3,12 @@
     <declare-styleable name="CounterRoundButton" >
         <attr name="counter" format="integer"/>
     </declare-styleable>
+
+    <declare-styleable name="EditTextViewSwitcher" >
+        <attr name="text_mode" format="enum">
+            <enum name="edit" value="1" />
+            <enum name="text" value="2" />
+        </attr>
+        <attr name="edit_text" format="reference|string" />
+    </declare-styleable>
 </resources>
